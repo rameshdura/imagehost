@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Appendix Surgery Translator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Custom CSS to hide scrollbar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        /* Basic spinner for loading state */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6; /* Blue-500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="container mx-auto max-w-4xl bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-800 mb-8">Dynamic Medical Translator</h1>
+
+        <!-- User Input Section -->
+        <div class="mb-8 p-4 bg-gray-50 rounded-xl shadow-inner">
+            <label for="situationInput" class="block text-lg font-semibold text-gray-700 mb-2">Describe a situation:</label>
+            <textarea id="situationInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[80px]" placeholder="e.g., My brother is going for appendix surgery. I need terms for talking to the doctor about his condition and recovery."></textarea>
+            <button id="generateTermsBtn" class="mt-4 w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-150 ease-in-out flex items-center justify-center">
+                <span id="buttonText">Generate Terms</span>
+                <span id="loadingSpinner" class="spinner hidden"></span>
+            </button>
+        </div>
+
+        <!-- Tab Buttons (Dynamically populated) -->
+        <div id="tab-buttons-container" class="flex justify-center mb-6 space-x-2 md:space-x-4 flex-wrap">
+            <!-- Tab buttons will be injected here by JavaScript -->
+        </div>
+
+        <!-- Tab Content Sections -->
+        <div id="tab-content-container">
+            <!-- English Term Cloud Section (Dynamic based on active tab) -->
+            <div id="term-cloud-container" class="mb-8">
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-4 text-center">English Terms</h2>
+                <div class="space-y-4">
+                    <!-- Term rows will be dynamically populated here -->
+                    <div id="term-row-1" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                    <div id="term-row-2" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                    <div id="term-row-3" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                </div>
+                <p id="noTermsMessage" class="text-center text-gray-500 text-lg mt-4 hidden">No terms generated for this category. Please try a different situation or category.</p>
+            </div>
+        </div>
+
+        <!-- Japanese Translation Section -->
+        <div class="bg-blue-50 p-6 rounded-xl shadow-inner border border-blue-200">
+            <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-4 text-center">Japanese Translation</h2>
+            <div id="translation-display" class="text-center text-2xl md:text-3xl font-bold text-blue-700 min-h-[60px] flex items-center justify-center">
+                <p class="text-gray-500 text-lg md:text-xl font-normal">Click an English term above to see its Japanese translation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const situationInput = document.getElementById('situationInput');
+        const generateTermsBtn = document.getElementById('generateTermsBtn');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const tabButtonsContainer = document.getElementById('tab-buttons-container');
+        const translationDisplay = document.getElementById('translation-display');
+        const noTermsMessage = document.getElementById('noTermsMessage');
+
+        // References to term rows
+        const termRows = [
+            document.getElementById('term-row-1'),
+            document.getElementById('term-row-2'),
+            document.getElementById('term-row-3')
+        ];
+
+        // Global variable to store dynamically loaded terms
+        let dynamicMedicalTerms = [];
+        let activeTab = ''; // Stores the currently active tab category
+
+        /**
+         * Clears all term buttons from the UI.
+         */
+        function clearTermButtons() {
+            termRows.forEach(row => row.innerHTML = '');
+            noTermsMessage.classList.add('hidden');
+        }
+
+        /**
+         * Displays the Japanese translation for a given English term.
+         * @param {string} englishTerm - The English term.
+         * @param {string} japaneseTranslation - The Japanese translation.
+         */
+        function displayTranslation(englishTerm, japaneseTranslation) {
+            translationDisplay.innerHTML = `<p><span class="text-blue-800">${englishTerm}</span>: ${japaneseTranslation}</p>`;
+        }
+
+        /**
+         * Renders the English term buttons for the active category into their respective rows.
+         * @param {string} category - The category of terms to render.
+         */
+        function renderTermButtons(category) {
+            clearTermButtons(); // Clear existing buttons before rendering new ones
+            translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">Click an English term above to see its Japanese translation.</p>`;
+
+            // Find the terms for the selected category
+            const categoryData = dynamicMedicalTerms.find(cat => cat.category === category);
+            const termsToRender = categoryData ? categoryData.terms : [];
+
+            if (!termsToRender || termsToRender.length === 0) {
+                noTermsMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Distribute terms across three rows for better visual organization
+            const termsPerRow = Math.ceil(termsToRender.length / 3);
+
+            termsToRender.forEach((term, index) => {
+                const button = document.createElement('button');
+                button.textContent = term.english;
+                button.className = 'flex-shrink-0 px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-full shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-150 ease-in-out whitespace-nowrap';
+                button.onclick = () => displayTranslation(term.english, term.japanese);
+
+                let targetRow;
+                if (index < termsPerRow) {
+                    targetRow = termRows[0];
+                } else if (index < termsPerRow * 2) {
+                    targetRow = termRows[1];
+                } else {
+                    targetRow = termRows[2];
+                }
+                targetRow.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles tab switching: updates button styles and renders terms for the new tab.
+         * @param {string} tabName - The name of the tab to activate.
+         */
+        function showTab(tabName) {
+            activeTab = tabName;
+
+            // Update button styles for all tabs
+            document.querySelectorAll('.tab-button').forEach(button => {
+                if (button.dataset.tab === tabName) {
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    button.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                } else {
+                    button.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                    button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                }
+            });
+
+            // Render terms for the newly selected tab
+            renderTermButtons(activeTab);
+        }
+
+        /**
+         * Dynamically creates tab buttons based on the categories received from the API.
+         * Sets the first category as the active tab.
+         * @param {Array<Object>} categories - An array of category objects from the API response.
+         */
+        function createTabButtons(categories) {
+            tabButtonsContainer.innerHTML = ''; // Clear existing tabs
+            if (categories.length === 0) {
+                tabButtonsContainer.innerHTML = `<p class="text-center text-gray-500">No categories generated.</p>`;
+                return;
+            }
+
+            categories.forEach((cat, index) => {
+                const button = document.createElement('button');
+                button.textContent = cat.category;
+                button.className = `tab-button px-4 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition duration-200 ease-in-out shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 ${index === 0 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+                button.dataset.tab = cat.category;
+                button.addEventListener('click', () => showTab(cat.category));
+                tabButtonsContainer.appendChild(button);
+            });
+
+            // Set the first category as active by default
+            if (categories.length > 0) {
+                showTab(categories[0].category);
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate terms based on the user's situation.
+         */
+        async function generateTermsFromApi() {
+            const prompt = situationInput.value.trim();
+            if (!prompt) {
+                alert('Please enter a situation to generate terms.');
+                return;
+            }
+
+            // Show loading state
+            buttonText.textContent = 'Generating...';
+            loadingSpinner.classList.remove('hidden');
+            generateTermsBtn.disabled = true;
+            clearTermButtons();
+            translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">Generating terms...</p>`;
+            tabButtonsContainer.innerHTML = ''; // Clear tabs during generation
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: `Given the situation: '${prompt}'. Generate a JSON array of categories, where each category contains an array of English terms and their Japanese translations relevant to the situation. Categorize them into 'Relation', 'Medical Related', and 'Q&A' if applicable, or create new relevant categories. Ensure the Japanese translation includes the Romaji in parentheses.
+
+                Example format:
+                [
+                  {
+                    "category": "Relation",
+                    "terms": [
+                      {"english": "My younger brother", "japanese": "私の弟 (Watashi no otōto)"}
+                    ]
+                  },
+                  {
+                    "category": "Medical Related",
+                    "terms": [
+                      {"english": "Appendicitis", "japanese": "虫垂炎 (Chūsui-en)"}
+                    ]
+                  }
+                ]` }] });
+
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "category": { "type": "STRING" },
+                                    "terms": {
+                                        "type": "ARRAY",
+                                        "items": {
+                                            type: "OBJECT",
+                                            properties: {
+                                                "english": { "type": "STRING" },
+                                                "japanese": { "type": "STRING" }
+                                            },
+                                            propertyOrdering: ["english", "japanese"]
+                                        }
+                                    }
+                                },
+                                propertyOrdering: ["category", "terms"]
+                            }
+                        }
+                    }
+                };
+
+                const apiKey = "AIzaSyDyS-Jxl3wM4M-4pQgMYABEknN5twgAXDA";// Leave this empty; Canvas will provide it at runtime.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                // Check if the API returned valid content
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    let parsedJson;
+                    try {
+                        parsedJson = JSON.parse(jsonString);
+                    } catch (parseError) {
+                        console.error("Failed to parse JSON from API response:", parseError);
+                        translationDisplay.innerHTML = `<p class="text-red-500 text-lg md:text-xl font-normal">Error: Could not parse terms from the API. Please try again.</p>`;
+                        return;
+                    }
+
+                    // Store the parsed terms globally
+                    dynamicMedicalTerms = parsedJson;
+
+                    if (dynamicMedicalTerms.length > 0) {
+                        createTabButtons(dynamicMedicalTerms); // Create new tabs based on API response
+                    } else {
+                        tabButtonsContainer.innerHTML = `<p class="text-center text-gray-500">No categories generated for this situation.</p>`;
+                        clearTermButtons();
+                        translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">No terms found for your situation. Please try a different description.</p>`;
+                    }
+
+                } else {
+                    // Handle cases where the API response structure is unexpected or content is missing
+                    console.warn("API response did not contain expected content:", result);
+                    tabButtonsContainer.innerHTML = `<p class="text-center text-gray-500">No terms could be generated. Please refine your situation description.</p>`;
+                    clearTermButtons();
+                    translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">No terms found for your situation. Please try a different description.</p>`;
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                tabButtonsContainer.innerHTML = `<p class="text-center text-red-500">Error connecting to the API. Please check your network or try again later.</p>`;
+                clearTermButtons();
+                translationDisplay.innerHTML = `<p class="text-red-500 text-lg md:text-xl font-normal">An error occurred while fetching terms. Please try again.</p>`;
+            } finally {
+                // Hide loading state
+                buttonText.textContent = 'Generate Terms';
+                loadingSpinner.classList.add('hidden');
+                generateTermsBtn.disabled = false;
+            }
+        }
+
+        // Event listener for the Generate button
+        generateTermsBtn.addEventListener('click', generateTermsFromApi);
+
+        // Initial state: Display a message to prompt user input
+        document.addEventListener('DOMContentLoaded', () => {
+            tabButtonsContainer.innerHTML = `<p class="text-center text-gray-500">Enter a situation above and click 'Generate Terms' to get started.</p>`;
+            clearTermButtons();
+            translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">Terms will appear here after generation.</p>`;
+        });
+    </script>
+</body>
+</html>
