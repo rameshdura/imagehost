@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix Surgery Translator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Custom CSS to hide scrollbar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="container mx-auto max-w-4xl bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-800 mb-8">Appendix Surgery Term Translator</h1>
+
+        <!-- Tab Buttons -->
+        <div class="flex justify-center mb-6 space-x-2 md:space-x-4">
+            <button id="tab-relation" class="tab-button px-4 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition duration-200 ease-in-out bg-blue-600 text-white shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75" data-tab="relation">Relation</button>
+            <button id="tab-medical" class="tab-button px-4 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition duration-200 ease-in-out bg-gray-200 text-gray-700 shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75" data-tab="medical">Medical Related</button>
+            <button id="tab-qa" class="tab-button px-4 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition duration-200 ease-in-out bg-gray-200 text-gray-700 shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75" data-tab="qa">Q&A</button>
+        </div>
+
+        <!-- Tab Content Sections -->
+        <div id="tab-content-container">
+            <!-- English Term Cloud Section (Dynamic based on active tab) -->
+            <div id="term-cloud-container" class="mb-8">
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-4 text-center">English Terms</h2>
+                <div class="space-y-4">
+                    <!-- Term rows will be dynamically populated here -->
+                    <div id="term-row-1" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                    <div id="term-row-2" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                    <div id="term-row-3" class="flex overflow-x-scroll hide-scrollbar whitespace-nowrap py-2 space-x-3 md:space-x-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Japanese Translation Section -->
+        <div class="bg-blue-50 p-6 rounded-xl shadow-inner border border-blue-200">
+            <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-4 text-center">Japanese Translation</h2>
+            <div id="translation-display" class="text-center text-2xl md:text-3xl font-bold text-blue-700 min-h-[60px] flex items-center justify-center">
+                <p class="text-gray-500 text-lg md:text-xl font-normal">Click an English term above to see its Japanese translation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define all medical terms categorized by tab
+        const allMedicalTerms = {
+            relation: [
+                { english: "My younger brother", japanese: "私の弟 (Watashi no otōto)" },
+                { english: "He is my younger brother", japanese: "彼は私の弟です (Kare wa watashi no otōto desu)" },
+                { english: "I am his elder brother", japanese: "私は彼の兄です (Watashi wa kare no ani desu)" },
+                { english: "My family", japanese: "私の家族 (Watashi no kazoku)" },
+                { english: "My name is...", japanese: "私の名前は...です (Watashi no namae wa... desu)" },
+                { english: "Can I visit him?", japanese: "彼に面会できますか？ (Kare ni menkai dekimasu ka?)" },
+                { english: "Thank you", japanese: "ありがとうございます (Arigatō gozaimasu)" },
+                { english: "Excuse me", japanese: "すみません (Sumimasen)" },
+                { english: "Please", japanese: "お願いします (Onegai shimasu)" },
+                { english: "Hello", japanese: "こんにちは (Konnichiwa)" },
+                { english: "Good morning", japanese: "おはようございます (Ohayō gozaimasu)" },
+                { english: "Good evening", japanese: "こんばんは (Konbanwa)" },
+                { english: "Good night", japanese: "おやすみなさい (Oyasuminasai)" },
+                { english: "How is he?", japanese: "彼の具合はどうですか？ (Kare no guai wa dō desu ka?)" },
+                { english: "Is he comfortable?", japanese: "彼は楽にしていますか？ (Kare wa raku ni shite imasu ka?)" },
+                { english: "I am worried about him", japanese: "彼が心配です (Kare ga shinpai desu)" },
+                { english: "Can I stay with him?", japanese: "彼と一緒にいられますか？ (Kare to issho ni iraremasu ka?)" },
+                { english: "Is he sleeping?", japanese: "彼は寝ていますか？ (Kare wa nete imasu ka?)" },
+                { english: "He is a minor", japanese: "彼は未成年です (Kare wa miseinen desu)" },
+                { english: "He is an adult", japanese: "彼は成人です (Kare wa seijin desu)" }
+            ],
+            medical: [
+                { english: "Appendix", japanese: "虫垂 (Chūsui)" },
+                { english: "Appendicitis", japanese: "虫垂炎 (Chūsui-en)" },
+                { english: "Surgery", japanese: "手術 (Shujutsu)" },
+                { english: "Anesthesia", japanese: "麻酔 (Masui)" },
+                { english: "Pain", japanese: "痛み (Itami)" },
+                { english: "Recovery", japanese: "回復 (Kaifuku)" },
+                { english: "Incision", japanese: "切開 (Sekkai)" },
+                { english: "Discharge", japanese: "退院 (Taiin)" },
+                { english: "Doctor", japanese: "医師 (Ishi)" },
+                { english: "Nurse", japanese: "看護師 (Kangoshi)" },
+                { english: "Hospital", japanese: "病院 (Byōin)" },
+                { english: "Medicine", japanese: "薬 (Kusuri)" },
+                { english: "Fever", japanese: "発熱 (Hatsunetsu)" },
+                { english: "Nausea", japanese: "吐き気 (Hakike)" },
+                { english: "Vomiting", japanese: "嘔吐 (Ōto)" },
+                { english: "Abdomen", japanese: "腹部 (Fukubu)" },
+                { english: "Inflammation", japanese: "炎症 (Enshō)" },
+                { english: "Complication", japanese: "合併症 (Gappei-shō)" },
+                { english: "Suture", japanese: "縫合 (Hōgō)" },
+                { english: "Discomfort", japanese: "不快感 (Fukaikan)" },
+                { english: "Post-operation", japanese: "術後 (Jutsugo)" },
+                { english: "Pre-operation", japanese: "術前 (Jutsuzen)" },
+                { english: "Diagnosis", japanese: "診断 (Shindan)" },
+                { english: "Symptoms", japanese: "症状 (Shōjō)" },
+                { english: "Intravenous", japanese: "点滴 (Tenteki)" },
+                { english: "Blood test", japanese: "血液検査 (Ketsueki Kensa)" },
+                { english: "Ultrasound", japanese: "超音波検査 (Chōonpa Kensa)" },
+                { english: "CT scan", japanese: "CT検査 (CT Kensa)" },
+                { english: "Medical history", japanese: "病歴 (Byōreki)" },
+                { english: "Allergy", japanese: "アレルギー (Arerugī)" },
+                { english: "Prescription", japanese: "処方箋 (Shohōsen)" },
+                { english: "Emergency", japanese: "緊急 (Kinkyū)" },
+                { english: "Operating room", japanese: "手術室 (Shujutsu-shitsu)" },
+                { english: "General ward", japanese: "一般病棟 (Ippan Byōtō)" },
+                { english: "Intensive Care Unit (ICU)", japanese: "集中治療室 (Shūchū Chiryō-shitsu)" },
+                { english: "Consent form", japanese: "同意書 (Dōisho)" },
+                { english: "Medical examination", japanese: "診察 (Shinsatsu)" }
+            ],
+            qa: [
+                { english: "How is he doing?", japanese: "彼の容態はどうですか？ (Kare no yōdai wa dō desu ka?)" },
+                { english: "When will the surgery be?", japanese: "手術はいつですか？ (Shujutsu wa itsu desu ka?)" },
+                { english: "How long will the surgery take?", japanese: "手術はどのくらいかかりますか？ (Shujutsu wa dono kurai kakarimasu ka?)" },
+                { english: "What are the risks?", japanese: "リスクは何ですか？ (Risuku wa nan desu ka?)" },
+                { english: "When can he eat?", japanese: "いつ食事ができますか？ (Itsu shokuji ga dekimasu ka?)" },
+                { english: "When can he go home?", japanese: "いつ退院できますか？ (Itsu taiin dekimasu ka?)" },
+                { english: "Will there be much pain?", japanese: "痛みはひどいですか？ (Itami wa hidoi desu ka?)" },
+                { english: "What kind of anesthesia will be used?", japanese: "どのような麻酔を使いますか？ (Donoyōna masui o tsukaimasu ka?)" },
+                { english: "Can I talk to the doctor?", japanese: "医師と話せますか？ (Ishi to hanasemasu ka?)" },
+                { english: "Can I talk to the nurse?", japanese: "看護師と話せますか？ (Kangoshi to hanasemasu ka?)" },
+                { english: "What should I prepare?", japanese: "何を準備すればいいですか？ (Nani o junbi sureba ii desu ka?)" },
+                { english: "Is he awake?", japanese: "彼は目を覚ましていますか？ (Kare wa me o samashite imasu ka?)" },
+                { english: "Is he in pain?", japanese: "彼は痛がっていますか？ (Kare wa itagatte imasu ka?)" },
+                { english: "What is the recovery process like?", japanese: "回復プロセスはどのようなものですか？ (Kaifuku purosesu wa donoyōna mono desu ka?)" },
+                { english: "Are there any side effects?", japanese: "副作用はありますか？ (Sakuyō wa arimasu ka?)" },
+                { english: "What is his current condition?", japanese: "彼の現在の状態はどうですか？ (Kare no genzai no jōtai wa dō desu ka?)" },
+                { english: "Can he drink water?", japanese: "彼は水を飲めますか？ (Kare wa mizu o nomemasu ka?)" },
+                { english: "When can he walk?", japanese: "彼はいつ歩けますか？ (Kare wa itsu arukemasu ka?)" },
+                { english: "Is he allowed visitors?", japanese: "面会は許可されていますか？ (Menkai wa kyoka sarete imasu ka?)" },
+                { english: "What is the follow-up plan?", japanese: "今後の経過観察はどうなりますか？ (Kongo no keika kansatsu wa dō narimasu ka?)" }
+            ]
+        };
+
+        const translationDisplay = document.getElementById('translation-display');
+        const termCloudContainer = document.getElementById('term-cloud-container');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const termRows = [
+            document.getElementById('term-row-1'),
+            document.getElementById('term-row-2'),
+            document.getElementById('term-row-3')
+        ];
+
+        let activeTab = 'relation'; // Default active tab
+
+        /**
+         * Renders the English term buttons for the active category into their respective rows.
+         * @param {string} category - The category of terms to render (e.g., 'relation', 'medical', 'qa').
+         */
+        function renderTermButtons(category) {
+            // Clear existing buttons
+            termRows.forEach(row => row.innerHTML = '');
+            translationDisplay.innerHTML = `<p class="text-gray-500 text-lg md:text-xl font-normal">Click an English term above to see its Japanese translation.</p>`;
+
+            const termsToRender = allMedicalTerms[category];
+            if (!termsToRender || termsToRender.length === 0) {
+                termRows[0].innerHTML = `<p class="text-gray-500 text-center w-full">No terms available for this category.</p>`;
+                return;
+            }
+
+            // Distribute terms across three rows
+            const termsPerRow = Math.ceil(termsToRender.length / 3);
+
+            termsToRender.forEach((term, index) => {
+                const button = document.createElement('button');
+                button.textContent = term.english;
+                button.className = 'flex-shrink-0 px-5 py-2.5 bg-blue-600 text-white font-medium text-sm rounded-full shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-150 ease-in-out whitespace-nowrap';
+                button.onclick = () => displayTranslation(term.english, term.japanese);
+
+                let targetRow;
+                if (index < termsPerRow) {
+                    targetRow = termRows[0];
+                } else if (index < termsPerRow * 2) {
+                    targetRow = termRows[1];
+                } else {
+                    targetRow = termRows[2];
+                }
+                targetRow.appendChild(button);
+            });
+        }
+
+        /**
+         * Displays the Japanese translation for a given English term.
+         * @param {string} englishTerm - The English term.
+         * @param {string} japaneseTranslation - The Japanese translation.
+         */
+        function displayTranslation(englishTerm, japaneseTranslation) {
+            translationDisplay.innerHTML = `<p><span class="text-blue-800">${englishTerm}</span>: ${japaneseTranslation}</p>`;
+        }
+
+        /**
+         * Handles tab switching.
+         * @param {string} tabName - The name of the tab to activate.
+         */
+        function showTab(tabName) {
+            activeTab = tabName;
+
+            // Update button styles
+            tabButtons.forEach(button => {
+                if (button.dataset.tab === tabName) {
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    button.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                } else {
+                    button.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                    button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                }
+            });
+
+            // Render terms for the selected tab
+            renderTermButtons(activeTab);
+        }
+
+        // Add event listeners to tab buttons
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                showTab(button.dataset.tab);
+            });
+        });
+
+        // Initialize the first tab on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab(activeTab);
+        });
+    </script>
+</body>
+</html>
