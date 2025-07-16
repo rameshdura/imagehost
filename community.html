@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepali Connect - Diaspora App Prototype</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --nepali-red: #DC143C;
+            --nepali-blue: #003366;
+            --nepali-light-blue: #4682B4;
+        }
+        
+        .nepali-gradient {
+            background: linear-gradient(135deg, var(--nepali-red), var(--nepali-blue));
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .tab-active {
+            color: var(--nepali-red);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--nepali-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .nepali-text {
+            font-family: 'Devanagari Sangam MN', 'Noto Sans Devanagari', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Mobile App Container -->
+    <div class="max-w-md mx-auto bg-white shadow-2xl min-h-screen relative">
+        
+        <!-- Header -->
+        <div class="nepali-gradient text-white p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <span class="text-xl font-bold" style="color: var(--nepali-red);">🏔️</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Nepali Connect</h1>
+                    <p class="text-sm opacity-90">Global Diaspora Platform</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleLanguage()" class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+                    EN | नेपाली
+                </button>
+                <div class="relative">
+                    <i class="fas fa-bell text-xl cursor-pointer"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="home" class="screen active">
+            <!-- Welcome Section -->
+            <div class="p-4 bg-gradient-to-r from-blue-50 to-red-50">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold">Namaste, Ramesh!</h2>
+                        <p class="text-gray-600 text-sm">Welcome back to your community</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="font-bold text-lg" style="color: var(--nepali-red);">1,247</div>
+                        <div class="text-xs text-gray-600">Community Members</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="font-bold text-lg" style="color: var(--nepali-blue);">89</div>
+                        <div class="text-xs text-gray-600">Job Openings</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="font-bold text-lg text-green-600">12</div>
+                        <div class="text-xs text-gray-600">Upcoming Events</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Quick Access -->
+            <div class="p-4">
+                <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-red-800">Emergency Services</h3>
+                            <p class="text-red-600 text-sm">Quick access to help when needed</p>
+                        </div>
+                        <button onclick="showScreen('services')" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm">
+                            <i class="fas fa-phone"></i> Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Content -->
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-3">Featured for You</h3>
+                
+                <!-- Upcoming Events -->
+                <div class="bg-white rounded-lg shadow-sm border p-4 mb-4 card-hover transition-all">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">Dashain Celebration 2024</h4>
+                            <p class="text-gray-600 text-sm mt-1">Join the community celebration</p>
+                            <div class="flex items-center mt-2 text-sm text-gray-500">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Oct 15, 2024 • 6:00 PM
+                            </div>
+                            <div class="flex items-center mt-1 text-sm text-gray-500">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                Community Center, Melbourne
+                            </div>
+                        </div>
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-orange-400 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">🎉</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Interested</button>
+                        <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">Share</button>
+                    </div>
+                </div>
+
+                <!-- Job Highlight -->
+                <div class="bg-white rounded-lg shadow-sm border p-4 mb-4 card-hover transition-all">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">Kitchen Hand - Nepali Restaurant</h4>
+                            <p class="text-gray-600 text-sm mt-1">Everest Kitchen • Melbourne CBD</p>
+                            <div class="flex items-center mt-2 text-sm text-green-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                $25/hour • Part-time
+                            </div>
+                        </div>
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-400 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">🍴</span>
+                        </div>
+                    </div>
+                    <button onclick="showScreen('jobs')" class="mt-3 bg-green-500 text-white px-4 py-2 rounded-full text-sm w-full">
+                        View Details
+                    </button>
+                </div>
+
+                <!-- Restaurant Feature -->
+                <div class="bg-white rounded-lg shadow-sm border p-4 card-hover transition-all">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">Mount Everest Restaurant</h4>
+                            <p class="text-gray-600 text-sm mt-1">Authentic Nepali cuisine • 4.8 ⭐</p>
+                            <div class="flex items-center mt-2 text-sm text-orange-600">
+                                <i class="fas fa-percent mr-2"></i>
+                                20% off for community members
+                            </div>
+                        </div>
+                        <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-400 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">🏔️</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex space-x-2">
+                        <button class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">Order Now</button>
+                        <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">Directions</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Screen -->
+        <div id="community" class="screen">
+            <div class="p-4">
+                <!-- Search Bar -->
+                <div class="relative mb-4">
+                    <input type="text" placeholder="Search communities, people, events..." 
+                           class="w-full p-3 pl-10 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Community Tabs -->
+                <div class="flex space-x-4 mb-4 border-b">
+                    <button class="pb-2 px-1 border-b-2 border-red-500 text-red-500 font-semibold">Groups</button>
+                    <button class="pb-2 px-1 text-gray-600">Events</button>
+                    <button class="pb-2 px-1 text-gray-600">Organizations</button>
+                    <button class="pb-2 px-1 text-gray-600">People</button>
+                </div>
+
+                <!-- Popular Groups -->
+                <h3 class="text-lg font-semibold mb-3">Popular Groups</h3>
+                
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <span class="text-white text-xl">🏢</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Melbourne Nepali Professionals</h4>
+                                    <p class="text-gray-600 text-sm">2,847 members • Very active</p>
+                                </div>
+                            </div>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm">Join</button>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-3">Connect with Nepali professionals in Melbourne for networking and career opportunities.</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                                    <span class="text-white text-xl">🎓</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Nepali Students Australia</h4>
+                                    <p class="text-gray-600 text-sm">1,523 members • Active</p>
+                                </div>
+                            </div>
+                            <button class="bg-green-500 text-white px-4 py-2 rounded-full text-sm">Join</button>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-3">Support group for Nepali students studying in Australian universities.</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                                    <span class="text-white text-xl">🍛</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Nepali Food & Culture</h4>
+                                    <p class="text-gray-600 text-sm">3,912 members • Very active</p>
+                                </div>
+                            </div>
+                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">Joined</button>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-3">Share recipes, cultural traditions, and celebrate Nepali heritage together.</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <h3 class="text-lg font-semibold mb-3 mt-6">Recent Activity</h3>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-gray-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="font-semibold">Sita Sharma</span>
+                                    <span class="text-gray-500 text-sm">in Melbourne Nepali Professionals</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">Looking for recommendations for good tax agents who understand international students' tax situations. Any suggestions?</p>
+                                <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span><i class="fas fa-thumbs-up"></i> 12</span>
+                                    <span><i class="fas fa-comment"></i> 8 replies</span>
+                                    <span>2h ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-gray-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="font-semibold">Ram Thapa</span>
+                                    <span class="text-gray-500 text-sm">in Nepali Food & Culture</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">Made authentic gundruk today! Recipe in comments 😊 Missing home flavors.</p>
+                                <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span><i class="fas fa-thumbs-up"></i> 24</span>
+                                    <span><i class="fas fa-comment"></i> 15 replies</span>
+                                    <span>4h ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Screen -->
+        <div id="jobs" class="screen">
+            <div class="p-4">
+                <!-- Search and Filters -->
+                <div class="space-y-3 mb-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search jobs, companies, skills..." 
+                               class="w-full p-3 pl-10 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex space-x-2 overflow-x-auto">
+                        <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap">All Jobs</button>
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap">Restaurant</button>
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap">Part-time</button>
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap">Cash Jobs</button>
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap">Professional</button>
+                    </div>
+                </div>
+
+                <!-- Job Listings -->
+                <div class="space-y-4">
+                    <!-- Featured Job -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-4 border-l-4 border-yellow-500">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">FEATURED</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">URGENT</span>
+                                </div>
+                                <h4 class="font-bold text-lg">Senior Chef - Nepali Cuisine</h4>
+                                <p class="text-gray-700">Himalayan Kitchen • Sydney CBD</p>
+                            </div>
+                            <button class="text-gray-400">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                $28-32/hour
+                            </div>
+                            <div class="flex items-center text-blue-600">
+                                <i class="fas fa-clock mr-2"></i>
+                                Full-time
+                            </div>
+                            <div class="flex items-center text-purple-600">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                Sydney
+                            </div>
+                            <div class="flex items-center text-orange-600">
+                                <i class="fas fa-users mr-2"></i>
+                                5+ years exp
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Looking for experienced chef specializing in authentic Nepali and Tibetan cuisine. Visa sponsorship available for the right candidate.</p>
+                        <button class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full w-full font-semibold">
+                            Apply Now
+                        </button>
+                    </div>
+
+                    <!-- Regular Jobs -->
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-800">Kitchen Hand</h4>
+                                <p class="text-gray-600 text-sm">Everest Restaurant • Melbourne</p>
+                            </div>
+                            <button class="text-gray-400">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                $25/hour
+                            </div>
+                            <div class="flex items-center text-blue-600">
+                                <i class="fas fa-clock mr-2"></i>
+                                Part-time
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Evening shifts available. Perfect for students. Nepali-speaking environment.</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm flex-1">Apply</button>
+                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">Details</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-800">Delivery Driver</h4>
+                                <p class="text-gray-600 text-sm">Multiple Locations • Cash Daily</p>
+                            </div>
+                            <button class="text-gray-400">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                $180-250/day
+                            </div>
+                            <div class="flex items-center text-orange-600">
+                                <i class="fas fa-car mr-2"></i>
+                                Own vehicle
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Food delivery for multiple Nepali restaurants. Flexible hours, daily cash payment.</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm flex-1">Contact</button>
+                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">Share</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-800">IT Support Specialist</h4>
+                                <p class="text-gray-600 text-sm">Tech Solutions Pty Ltd • Brisbane</p>
+                            </div>
+                            <button class="text-gray-400">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                $65,000/year
+                            </div>
+                            <div class="flex items-center text-blue-600">
+                                <i class="fas fa-briefcase mr-2"></i>
+                                Full-time
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Looking for bilingual IT support specialist. English and Nepali language skills preferred.</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm flex-1">Apply</button>
+                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Screen -->
+        <div id="services" class="screen">
+            <div class="p-4">
+                <!-- Emergency Section -->
+                <div class="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-bold text-red-800 mb-3 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Emergency Services
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button class="bg-red-600 text-white p-3 rounded-lg flex items-center justify-between hover:bg-red-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-xl mr-3"></i>
+                                <div class="text-left">
+                                    <div class="font-semibold">Police</div>
+                                    <div class="text-sm opacity-90">Emergency: 000</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <button class="bg-red-600 text-white p-3 rounded-lg flex items-center justify-between hover:bg-red-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-ambulance text-xl mr-3"></i>
+                                <div class="text-left">
+                                    <div class="font-semibold">Ambulance</div>
+                                    <div class="text-sm opacity-90">Emergency: 000</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <button class="bg-red-600 text-white p-3 rounded-lg flex items-center justify-between hover:bg-red-700">
+                            <div class="flex items-center">
+                                <i class="fas fa-fire text-xl mr-3"></i>
+                                <div class="text-left">
+                                    <div class="font-semibold">Fire Department</div>
+                                    <div class="text-sm opacity-90">Emergency: 000</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Service Categories -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white rounded-lg p-4 shadow-sm border text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-user-md text-2xl text-blue-600"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2">Medical Services</h4>
+                        <p class="text-gray-600 text-sm">Nepali-speaking doctors and clinics</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-balance-scale text-2xl text-green-600"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2">Legal Aid</h4>
+                        <p class="text-gray-600 text-sm">Immigration and legal support</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-university text-2xl text-purple-600"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2">Government</h4>
+                        <p class="text-gray-600 text-sm">Visa, citizenship, official services</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-piggy-bank text-2xl text-orange-600"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2">Financial</h4>
+                        <p class="text-gray-600 text-sm">Banking, remittance, tax help</p>
+                    </div>
+                </div>
+
+                <!-- Resource Library -->
+                <h3 class="text-lg font-semibold mb-3">Resource Library</h3>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-passport text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Visa Extension Guide</h4>
+                                    <p class="text-gray-600 text-sm">Step-by-step process for student visas</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-home text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Housing Rights</h4>
+                                    <p class="text-gray-600 text-sm">Tenant rights and rental guidelines</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calculator text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Tax Return Help</h4>
+                                    <p class="text-gray-600 text-sm">Guide for international students</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 shadow-sm border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-heartbeat text-red-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Healthcare System</h4>
+                                    <p class="text-gray-600 text-sm">Medicare, bulk billing, and health cards</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Support -->
+                <div class="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">Need Help?</h4>
+                    <p class="text-gray-600 text-sm mb-3">Connect with community volunteers and support groups</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm">
+                        <i class="fas fa-hands-helping mr-2"></i>
+                        Find Support
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile" class="screen">
+            <div class="p-4">
+                <!-- Profile Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white mb-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-3xl text-gray-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold">Ramesh Shrestha</h2>
+                            <p class="opacity-90">Melbourne, Australia</p>
+                            <p class="text-sm opacity-80">Student • IT Professional</p>
+                        </div>
+                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+                            Edit
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-white border-opacity-20">
+                        <div class="text-center">
+                            <div class="font-bold text-lg">47</div>
+                            <div class="text-sm opacity-80">Connections</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-lg">12</div>
+                            <div class="text-sm opacity-80">Events Joined</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-lg">5</div>
+                            <div class="text-sm opacity-80">Groups</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="space-y-1 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Account Settings</h3>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-user-edit text-blue-600"></i>
+                                <span>Edit Profile</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bell text-green-600"></i>
+                                <span>Notifications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-shield-alt text-purple-600"></i>
+                                <span>Privacy & Security</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-language text-orange-600"></i>
+                                <span>Language Settings</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-500 text-sm">English</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Features -->
+                <div class="space-y-1 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">App Features</h3>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bookmark text-blue-600"></i>
+                                <span>Saved Items</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">8</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-briefcase text-green-600"></i>
+                                <span>My Job Applications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-calendar-check text-purple-600"></i>
+                                <span>My Events</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-star text-yellow-600"></i>
+                                <span>Reviews & Ratings</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support & Info -->
+                <div class="space-y-1 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Support & Information</h3>
+                    
+                    <div class="bg-white rounded-lg shadow-sm border">
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-question-circle text-blue-600"></i>
+                                <span>Help & FAQ</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-headset text-green-600"></i>
+                                <span>Contact Support</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between border-b">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-info-circle text-purple-600"></i>
+                                <span>About Nepali Connect</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                        
+                        <div class="p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-file-alt text-orange-600"></i>
+                                <span>Terms & Privacy</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Upgrade -->
+                <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg p-4 text-white mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold">Upgrade to Premium</h4>
+                            <p class="text-sm opacity-90">Get priority job alerts, ad-free experience, and more!</p>
+                        </div>
+                        <button class="bg-white text-orange-500 px-4 py-2 rounded-full font-semibold text-sm">
+                            Upgrade
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sign Out -->
+                <button class="w-full bg-red-500 text-white p-3 rounded-lg font-semibold">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t shadow-lg">
+            <div class="flex justify-around py-2">
+                <button onclick="showScreen('home')" class="flex flex-col items-center p-2 tab-btn" data-screen="home">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button onclick="showScreen('community')" class="flex flex-col items-center p-2 tab-btn" data-screen="community">
+                    <i class="fas fa-users text-xl mb-1"></i>
+                    <span class="text-xs">Community</span>
+                </button>
+                <button onclick="showScreen('jobs')" class="flex flex-col items-center p-2 tab-btn" data-screen="jobs">
+                    <i class="fas fa-briefcase text-xl mb-1"></i>
+                    <span class="text-xs">Jobs</span>
+                </button>
+                <button onclick="showScreen('services')" class="flex flex-col items-center p-2 tab-btn" data-screen="services">
+                    <i class="fas fa-hands-helping text-xl mb-1"></i>
+                    <span class="text-xs">Services</span>
+                </button>
+                <button onclick="showScreen('profile')" class="flex flex-col items-center p-2 tab-btn" data-screen="profile">
+                    <i class="fas fa-user text-xl mb-1"></i>
+                    <span class="text-xs">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Screen Navigation
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update tab styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+            });
+            
+            document.querySelector(`[data-screen="${screenId}"]`).classList.add('tab-active');
+        }
+
+        // Language Toggle
+        function toggleLanguage() {
+            // This would implement actual language switching
+            alert('Language switching functionality would be implemented here');
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial active tab
+            document.querySelector('[data-screen="home"]').classList.add('tab-active');
+            
+            // Add smooth scrolling behavior
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.style.paddingBottom = '80px'; // Account for bottom nav
+            });
+        });
+
+        // Add some interactive features
+        document.addEventListener('click', function(e) {
+            // Handle button clicks with feedback
+            if (e.target.tagName === 'BUTTON' && !e.target.onclick) {
+                e.target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    e.target.style.transform = 'scale(1)';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
